@@ -1,0 +1,702 @@
+<html>
+<head>
+<title>Simon's Minesweeper</title>
+<style>
+	body {
+    background-color: #d0d8e1;
+}
+
+#title {
+    font-size: 40px;
+    font-family: times;
+    margin: 20 20 20 20;
+}
+
+.tile {
+    width: 30px;
+    height: 30px;
+    background-color: grey;
+    display: inline-block;
+    border: 2px black solid;
+    margin: 0px;
+    text-align: center;
+}
+
+#theBoard {
+    text-align: center;
+}
+
+#sidebar {
+    position: absolute;
+    
+}
+
+#reset {
+    text-decoration: none;
+    color: black;
+    height: 50px;
+    width: 100px;
+    font-size: 40px;
+    text-align: center;
+    background-color: #f5e5d8;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 20 20 20 20;
+    padding: 10 10 10 10;
+}
+
+a {
+    text-decoration: none;
+    text-align: center;
+}
+
+a:visited {
+    color: black;
+}
+
+#legend {
+    text-align: center;
+}
+
+#blue {
+    background-color: blue;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#green {
+    background-color: green;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#yellow {
+    background-color: yellow;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#orange {
+    background-color: orange;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#purple {
+    background-color: purple;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#brown {
+    background-color: brown;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#red {
+    background-color: red;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+#black {
+    background-color: black;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+</style>
+<script>
+    var board = [
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1",
+    "-1","-1","-1","-1","-1","-1","-1","-1","-1","-1"
+    ];
+
+    var flags = [
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0",
+    "0","0","0","0","0","0","0","0","0","0"
+    ];
+
+    var tilesLeft = 90;
+
+//the counter for the loops
+
+    for (var x = 0; x < 10; x++)
+    {
+        var i = Math.floor(Math.random()*99);
+		if (board[i] != 1)
+		{
+        	board[i] = 1;
+		}
+		else
+		{
+			i = Math.floor(Math.random()*99);
+			board[x] = 1;
+		}
+    }
+
+
+    function clearArea(x)
+    {
+    	if (x+1 <= 99 && ((x % 10) != 9) && board[x+1] == -1)
+		{
+			changeTile(x+1);
+		}
+		if (x-1 >= 0 && ((x % 10) != 0) && board[x-1] == -1)
+		{
+			changeTile(x-1);
+		}
+		if (x+10 <= 99 && board[x+10] == -1)
+		{
+			changeTile(x+10);
+		}
+		if (x-10 >= 0 && board[x-10] == -1)
+		{
+			changeTile(x-10);
+		}
+		if (x+11 <= 99 && ((x % 10) != 9) && board[x+11] == -1)
+		{
+			changeTile(x+11);
+		}
+		if (x+9 <= 99 && ((x % 10) != 0) && board[x+9] == -1)
+		{
+			changeTile(x+9);
+		}
+		if (x-11 >= 0 && ((x % 10) != 0) && board[x-11] == -1)
+		{
+			changeTile(x-11);
+		}
+		if (x-9 >= 0 && ((x % 10) != 9) && board[x-9] == -1)
+		{
+			changeTile(x-9);
+		}
+    }
+
+
+
+    function changeTile(x)
+    {
+    	if (board[x] == -1 || board[x] == 1)
+    	{
+    		console.log(tilesLeft);
+		if (tilesLeft == 0)
+		{
+			return endGame();
+		}
+		console.log(x)
+		x = Number(x)
+		var counterMine = 0
+//The corners
+		if (x == 0)
+		{
+			if (board[Number(x)+Number(1)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)+Number(10)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)+Number(11)] == "1")
+			{
+				counterMine++
+			}
+		}
+		else if (x == 9)
+		{
+			if (board[Number(x)-Number(1)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)+Number(9)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)+Number(10)] == "1")
+			{
+				counterMine++
+			}
+		}
+		else if (x == 90)
+		{
+			if (board[Number(x)-Number(10)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)-Number(9)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)+Number(1)] == "1")
+			{
+				counterMine++
+			}
+		}
+		else if (x == 99)
+		{
+			if (board[Number(x)-Number(9)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)-Number(10)] == "1")
+			{
+				counterMine++
+			}
+			if (board[Number(x)-Number(1)] == "1")
+			{
+				counterMine++
+			}
+		}
+//the top row
+	else if (x == 1|| x == 2|| x == 3|| x == 4|| x == 5|| x == 6|| x == 7|| x == 8)
+	{
+		if (board[Number(x)-Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(11)] == "1")
+		{
+			counterMine++
+		}
+	}
+//the right-side row
+	else if (x == 19 || x == 29 || x == 39 || x == 49 || x == 59 || x == 69 || x == 79 || x == 89)
+	{
+		if (board[Number(x)-Number(11)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(10)] == "1")
+		{
+			counterMine++
+		}
+	}
+//the bottom row 
+	else if (x == 91 || x == 92 || x == 93 || x == 94 || x == 95 || x == 96 || x == 97 || x == 98)
+	{
+		if (board[Number(x)-Number(11)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(1)] == "1")
+		{
+			counterMine++
+		}
+	}
+//the left-side row
+	else if (x == 10 || x == 20 || x == 30 || x == 40 || x == 50 || x == 60 || x == 70 || x == 80)
+	{
+		if (board[Number(x)-Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(11)] == "1")
+		{
+			counterMine++
+		}
+	}
+//the middle 8x8 grid
+	else
+	{
+		if (board[Number(x)+Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)+Number(11)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(1)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(9)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(10)] == "1")
+		{
+			counterMine++
+		}
+		if (board[Number(x)-Number(11)] == "1")
+		{
+			counterMine++
+		}
+    }
+//Mine
+	if (board[x] == 1)
+	{
+        document.getElementById(x).style.backgroundColor = "red";
+		for (var z = 0; z < 100; z++)
+		{
+			if (board[z] == 1)
+			{
+				document.getElementById(z).style.backgroundColor = "red";
+			}
+		}
+		gameWin = false;
+		endGame();
+		return;
+	}
+//Safe
+	if (counterMine == 0)
+    {
+    	board[x] = 0;
+    	tilesLeft--;
+		document.getElementById(x).style.backgroundColor = "blue"
+		if (tilesLeft == 0)
+		{
+			return endGame();
+		}
+		clearArea(x)
+	}
+//1 Mine
+	else if (counterMine == 1)
+        {
+    		board[x] = 11;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "green"
+		}
+//2 Mines
+	else if (counterMine == 2)
+        {
+    		board[x] = 12;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "yellow"
+		}
+//3 Mines
+	else if (counterMine == 3)
+        {
+    		board[x] = 13;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "orange"
+		}
+//4 Mines
+	else if (counterMine == 4)
+        {
+    		board[x] = 14;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "purple"
+		}
+//5 Mines
+	else if (counterMine == 5)
+        {
+    		board[x] = 15;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "brown"
+		}
+//6 Mines
+	else if (counterMine == 6)
+        {
+    		board[x] = 16;
+			tilesLeft--;
+			if (tilesLeft == 0)
+			{
+				return endGame();
+			}
+			document.getElementById(x).style.backgroundColor = "black"
+		}
+//7 Mines
+	else if (counterMine == 7)
+        {
+    		board[x] = 17;
+			tilesLeft--;
+			document.getElementById(x).style.backgroundColor = "black"
+		}
+//8 Mines
+	else if (counterMine == 8)
+        {
+    		board[x] = 18;
+			document.getElementById(x).style.backgroundColor = "black"
+		}
+		if (tilesLeft == 0)
+		{
+			return endGame();
+		}
+    }
+	}
+
+    var minesLeft = 10;
+    var gameWin = true;
+
+    function flag(x)
+    {
+    	if (board[x] == -1 || board[x] == 1)
+    	{
+    		if (flags[x] == 0)
+    		{
+				document.getElementById(x).style.backgroundColor = "black"
+				flags[x] = 1;
+    			if (board[x] == 1) 
+    			{
+					gameWin = true;
+    			}
+				else 
+				{
+					gameWin = false;
+				}
+    		}
+    		else 
+    		{
+				document.getElementById(x).style.backgroundColor = "gray"
+				flags[x] = 0
+				gameWin = true
+    		}
+		}
+    }
+
+
+    function endGame()
+    {
+		if (gameWin == true)
+		{
+			window.alert("Congratulations, You have won!");
+			return;
+		}
+		else
+		{
+			window.alert("Game Over!");
+			return;
+		}
+    }
+
+</script>
+</head>
+<body>
+    <div id = "theBoard">
+    <div id = "title">Minesweeper</div>
+    <div id = "sidebar">
+    <div id = "reset"><a href = "ComputerScienceProjectB.html">Reset</a></div>
+    </div>
+    <div id="0" class="tile" onclick="changeTile('0')" oncontextmenu="flag(0); return false;"></div>
+    <div id="1" class="tile" onclick="changeTile('1')" oncontextmenu="flag(1); return false;"></div>
+    <div id="2" class="tile" onclick="changeTile('2')" oncontextmenu="flag(2); return false;"></div>
+    <div id="3" class="tile" onclick="changeTile('3')" oncontextmenu="flag(3); return false;"></div>
+    <div id="4" class="tile" onclick="changeTile('4')" oncontextmenu="flag(4); return false;"></div>
+    <div id="5" class="tile" onclick="changeTile('5')" oncontextmenu="flag(5); return false;"></div>
+    <div id="6" class="tile" onclick="changeTile('6')" oncontextmenu="flag(6); return false;"></div>
+    <div id="7" class="tile" onclick="changeTile('7')" oncontextmenu="flag(7); return false;"></div>
+    <div id="8" class="tile" onclick="changeTile('8')" oncontextmenu="flag(8); return false;"></div>
+    <div id="9" class="tile" onclick="changeTile('9')" oncontextmenu="flag(9); return false;"></div>
+    <br>
+    <div id="10" class="tile" onclick="changeTile('10')" oncontextmenu="flag(10); return false;"></div>
+    <div id="11" class="tile" onclick="changeTile('11')" oncontextmenu="flag(11); return false;"></div>
+    <div id="12" class="tile" onclick="changeTile('12')" oncontextmenu="flag(12); return false;"></div>
+    <div id="13" class="tile" onclick="changeTile('13')" oncontextmenu="flag(13); return false;"></div>
+    <div id="14" class="tile" onclick="changeTile('14')" oncontextmenu="flag(14); return false;"></div>
+    <div id="15" class="tile" onclick="changeTile('15')" oncontextmenu="flag(15); return false;"></div>
+    <div id="16" class="tile" onclick="changeTile('16')" oncontextmenu="flag(16); return false;"></div>
+    <div id="17" class="tile" onclick="changeTile('17')" oncontextmenu="flag(17); return false;"></div>
+    <div id="18" class="tile" onclick="changeTile('18')" oncontextmenu="flag(18); return false;"></div>
+    <div id="19" class="tile" onclick="changeTile('19')" oncontextmenu="flag(19); return false;"></div>
+    <br>
+    <div id="20" class="tile" onclick="changeTile('20')" oncontextmenu="flag(20); return false;"></div>
+    <div id="21" class="tile" onclick="changeTile('21')" oncontextmenu="flag(21); return false;"></div>
+    <div id="22" class="tile" onclick="changeTile('22')" oncontextmenu="flag(22); return false;"></div>
+    <div id="23" class="tile" onclick="changeTile('23')" oncontextmenu="flag(23); return false;"></div>
+    <div id="24" class="tile" onclick="changeTile('24')" oncontextmenu="flag(24); return false;"></div>
+    <div id="25" class="tile" onclick="changeTile('25')" oncontextmenu="flag(25); return false;"></div>
+    <div id="26" class="tile" onclick="changeTile('26')" oncontextmenu="flag(26); return false;"></div>
+    <div id="27" class="tile" onclick="changeTile('27')" oncontextmenu="flag(27); return false;"></div>
+    <div id="28" class="tile" onclick="changeTile('28')" oncontextmenu="flag(28); return false;"></div>
+    <div id="29" class="tile" onclick="changeTile('29')" oncontextmenu="flag(29); return false;"></div>
+    <br>
+    <div id="30" class="tile" onclick="changeTile('30')" oncontextmenu="flag(30); return false;"></div>
+    <div id="31" class="tile" onclick="changeTile('31')" oncontextmenu="flag(31); return false;"></div>
+    <div id="32" class="tile" onclick="changeTile('32')" oncontextmenu="flag(32); return false;"></div>
+    <div id="33" class="tile" onclick="changeTile('33')" oncontextmenu="flag(33); return false;"></div>
+    <div id="34" class="tile" onclick="changeTile('34')" oncontextmenu="flag(34); return false;"></div>
+    <div id="35" class="tile" onclick="changeTile('35')" oncontextmenu="flag(35); return false;"></div>
+    <div id="36" class="tile" onclick="changeTile('36')" oncontextmenu="flag(36); return false;"></div>
+    <div id="37" class="tile" onclick="changeTile('37')" oncontextmenu="flag(37); return false;"></div>
+    <div id="38" class="tile" onclick="changeTile('38')" oncontextmenu="flag(38); return false;"></div>
+    <div id="39" class="tile" onclick="changeTile('39')" oncontextmenu="flag(39); return false;"></div>
+    <br>
+    <div id="40" class="tile" onclick="changeTile('40')" oncontextmenu="flag(40); return false;"></div>
+    <div id="41" class="tile" onclick="changeTile('41')" oncontextmenu="flag(41); return false;"></div>
+    <div id="42" class="tile" onclick="changeTile('42')" oncontextmenu="flag(42); return false;"></div>
+    <div id="43" class="tile" onclick="changeTile('43')" oncontextmenu="flag(43); return false;"></div>
+    <div id="44" class="tile" onclick="changeTile('44')" oncontextmenu="flag(44); return false;"></div>
+    <div id="45" class="tile" onclick="changeTile('45')" oncontextmenu="flag(45); return false;"></div>
+    <div id="46" class="tile" onclick="changeTile('46')" oncontextmenu="flag(46); return false;"></div>
+    <div id="47" class="tile" onclick="changeTile('47')" oncontextmenu="flag(47); return false;"></div>
+    <div id="48" class="tile" onclick="changeTile('48')" oncontextmenu="flag(48); return false;"></div>
+    <div id="49" class="tile" onclick="changeTile('49')" oncontextmenu="flag(49); return false;"></div>
+    <br>
+    <div id="50" class="tile" onclick="changeTile('50')" oncontextmenu="flag(50); return false;"></div>
+    <div id="51" class="tile" onclick="changeTile('51')" oncontextmenu="flag(51); return false;"></div>
+    <div id="52" class="tile" onclick="changeTile('52')" oncontextmenu="flag(52); return false;"></div>
+    <div id="53" class="tile" onclick="changeTile('53')" oncontextmenu="flag(53); return false;"></div>
+    <div id="54" class="tile" onclick="changeTile('54')" oncontextmenu="flag(54); return false;"></div>
+    <div id="55" class="tile" onclick="changeTile('55')" oncontextmenu="flag(55); return false;"></div>
+    <div id="56" class="tile" onclick="changeTile('56')" oncontextmenu="flag(56); return false;"></div>
+    <div id="57" class="tile" onclick="changeTile('57')" oncontextmenu="flag(57); return false;"></div>
+    <div id="58" class="tile" onclick="changeTile('58')" oncontextmenu="flag(58); return false;"></div>
+    <div id="59" class="tile" onclick="changeTile('59')" oncontextmenu="flag(59); return false;"></div>
+    <br>
+    <div id="60" class="tile" onclick="changeTile('60')" oncontextmenu="flag(60); return false;"></div>
+    <div id="61" class="tile" onclick="changeTile('61')" oncontextmenu="flag(61); return false;"></div>
+    <div id="62" class="tile" onclick="changeTile('62')" oncontextmenu="flag(62); return false;"></div>
+    <div id="63" class="tile" onclick="changeTile('63')" oncontextmenu="flag(63); return false;"></div>
+    <div id="64" class="tile" onclick="changeTile('64')" oncontextmenu="flag(64); return false;"></div>
+    <div id="65" class="tile" onclick="changeTile('65')" oncontextmenu="flag(65); return false;"></div>
+    <div id="66" class="tile" onclick="changeTile('66')" oncontextmenu="flag(66); return false;"></div>
+    <div id="67" class="tile" onclick="changeTile('67')" oncontextmenu="flag(67); return false;"></div>
+    <div id="68" class="tile" onclick="changeTile('68')" oncontextmenu="flag(68); return false;"></div>
+    <div id="69" class="tile" onclick="changeTile('69')" oncontextmenu="flag(69); return false;"></div>
+    <br>
+    <div id="70" class="tile" onclick="changeTile('70')" oncontextmenu="flag(70); return false;"></div>
+    <div id="71" class="tile" onclick="changeTile('71')" oncontextmenu="flag(71); return false;"></div>
+    <div id="72" class="tile" onclick="changeTile('72')" oncontextmenu="flag(72); return false;"></div>
+    <div id="73" class="tile" onclick="changeTile('73')" oncontextmenu="flag(73); return false;"></div>
+    <div id="74" class="tile" onclick="changeTile('74')" oncontextmenu="flag(74); return false;"></div>
+    <div id="75" class="tile" onclick="changeTile('75')" oncontextmenu="flag(75); return false;"></div>
+    <div id="76" class="tile" onclick="changeTile('76')" oncontextmenu="flag(76); return false;"></div>
+    <div id="77" class="tile" onclick="changeTile('77')" oncontextmenu="flag(77); return false;"></div>
+    <div id="78" class="tile" onclick="changeTile('78')" oncontextmenu="flag(78); return false;"></div>
+    <div id="79" class="tile" onclick="changeTile('79')" oncontextmenu="flag(79); return false;"></div>
+    <br>
+    <div id="80" class="tile" onclick="changeTile('80')" oncontextmenu="flag(80); return false;"></div>
+    <div id="81" class="tile" onclick="changeTile('81')" oncontextmenu="flag(81); return false;"></div>
+    <div id="82" class="tile" onclick="changeTile('82')" oncontextmenu="flag(82); return false;"></div>
+    <div id="83" class="tile" onclick="changeTile('83')" oncontextmenu="flag(83); return false;"></div>
+    <div id="84" class="tile" onclick="changeTile('84')" oncontextmenu="flag(84); return false;"></div>
+    <div id="85" class="tile" onclick="changeTile('85')" oncontextmenu="flag(85); return false;"></div>
+    <div id="86" class="tile" onclick="changeTile('86')" oncontextmenu="flag(86); return false;"></div>
+    <div id="87" class="tile" onclick="changeTile('87')" oncontextmenu="flag(87); return false;"></div>
+    <div id="88" class="tile" onclick="changeTile('88')" oncontextmenu="flag(88); return false;"></div>
+    <div id="89" class="tile" onclick="changeTile('89')" oncontextmenu="flag(89); return false;"></div>
+    <br>
+    <div id="90" class="tile" onclick="changeTile('90')" oncontextmenu="flag(90); return false;"></div>
+    <div id="91" class="tile" onclick="changeTile('91')" oncontextmenu="flag(91); return false;"></div>
+    <div id="92" class="tile" onclick="changeTile('92')" oncontextmenu="flag(92); return false;"></div>
+    <div id="93" class="tile" onclick="changeTile('93')" oncontextmenu="flag(93); return false;"></div>
+    <div id="94" class="tile" onclick="changeTile('94')" oncontextmenu="flag(94); return false;"></div>
+    <div id="95" class="tile" onclick="changeTile('95')" oncontextmenu="flag(95); return false;"></div>
+    <div id="96" class="tile" onclick="changeTile('96')" oncontextmenu="flag(96); return false;"></div>
+    <div id="97" class="tile" onclick="changeTile('97')" oncontextmenu="flag(97); return false;"></div>
+    <div id="98" class="tile" onclick="changeTile('98')" oncontextmenu="flag(98); return false;"></div>
+    <div id="99" class="tile" onclick="changeTile('99')" oncontextmenu="flag(99); return false;"></div>
+    <p>
+    </div>
+    <div id = "legend">
+    <p>
+    <div id = "blue"></div>This means that there are no mines within a 1 tile radius.
+    <p>
+    <div id = "green"></div>This means that there is 1 mine in a 1 tile radius.
+    <p>
+    <div id = "yellow"></div>This means that there are 2 mines in a 1 tile radius.
+    <p>
+    <div id = "orange"></div>This means that there are 3 mines in a 1 tile radius.
+    <p>
+    <div id = "purple"></div>This means that there are 4 mines in a 1 tile radius.
+    <p>
+    <div id = "brown"></div>This means that there are 5 mines in a 1 tile radius.
+    <p>
+    <div id = "red"></div>This means that you just hit a mine!
+    <p>
+    <div id = "black"></div>This means you place a marker indicating there is a mine on that tile.
+    </div>
+</body>
+</html>
